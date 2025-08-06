@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
-exec 2>> error.txt
+exec 2>> errors.txt
 curl -f https://pokeapi.co/api/v2/pokemon/pikachu > data.json 
