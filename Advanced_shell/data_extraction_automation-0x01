@@ -12,12 +12,22 @@
 
 # Pikachu is of type Electric, weighs 6kg, and is 0.4m tall
 
-jq -r '.forms[0].name, .types[0].type.name, (.weight / 10), (.height / 10)' data.json |
-awk 'NR==1{ name = $0 }
-     NR==2{ type = $0 }
-     NR==3{ formatted_weight = $0 }
-     NR==4{ formatted_height = $0 }
-     END {
-       printf "%s is of type %s, weighs %.0fkg, and is %.0f tall.\n", name, type, formatted_weight, formatted_height
-     }' |
-sed -E 's/^([a-z])/\U\1/; s/type ([a-z])/\U\1/' 
+# jq -r '.forms[0].name, .types[0].type.name, (.weight / 10), (.height / 10)' data.json |
+# awk 'NR==1{ name = $0 }
+#      NR==2{ type = $0 }
+#      NR==3{ formatted_weight = $0 }
+#      NR==4{ formatted_height = $0 }
+#      END {
+#        printf "%s is of type %s, weighs %.0fkg, and is %.0f tall.\n", name, type, formatted_weight, formatted_height
+#      }' |
+# sed -E 's/^([a-z])/\U\1/; s/type ([a-z])/\U\1/' 
+
+name=$(jq -r '.forms[0].name' data.json | sed -E 's/^([a-z])/\U\1/')
+type=$(jq -r '.types[0].type.name' data.json | sed -E 's/^([a-z])/\U\1/')
+weight=$(jq -r '.weight' data.json)
+height=$(jq -r '.height' data.json)
+
+formatted_height=$(awk "BEGIN {printf \"%.1f\", $height / 10}")
+formatted_weight=$(awk "BEGIN {printf \"%.0f\", $weight / 10}")
+
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is $formatted_height tall."
