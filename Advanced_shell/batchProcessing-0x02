@@ -14,11 +14,7 @@ for item in "${pokemon[@]}"; do
     sleep 1
     done
 
-    if [[ ! -s "$item.json" ]]; then
-        echo "Failed to fetch data for $item after 3 attempts." >&2
-        continue
-    fi
-
     echo "Attempt $i for $item failed. Retrying..." >&2
     sleep 1
+    
 done
