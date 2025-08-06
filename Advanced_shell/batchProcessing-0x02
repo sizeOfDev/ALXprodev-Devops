@@ -11,4 +11,6 @@ for item in "${pokemon[@]}"; do
   curl -f https://pokeapi.co/api/v2/pokemon/$item > $item.json
   echo "Saved data to $item.json ✅"
 
+  sleep 1
+
 done
