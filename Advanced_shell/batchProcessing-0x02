@@ -12,9 +12,9 @@ for item in "${pokemon[@]}"; do
     echo "Attempt $i for $item failed. Retrying..." >&2
 
     sleep 1
-    done
+  done
 
-    echo "Attempt $i for $item failed. Retrying..." >&2
-    sleep 1
-    
+  echo "Saved data to $item.json ✅"
+  sleep 1
+
 done
