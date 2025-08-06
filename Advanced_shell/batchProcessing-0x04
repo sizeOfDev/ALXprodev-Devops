@@ -2,6 +2,10 @@
 
 pokemon=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
 
+pids=()
+
+trap 'echo "Stopping..."; for pid in "${pids[@]}"; do kill "$pid" 2>/dev/null; done; exit 1' INT
+
 for item in "${pokemon[@]}"; do
   (
     echo "Fetching $item..."
@@ -9,7 +13,14 @@ for item in "${pokemon[@]}"; do
     echo "Saved $item.json" ||
     echo "Failed to fetch $item" >&2
   ) &
+
+  pids+=($!)
 done
 
-wait
+jobs
+
+for pid in "${pids[@]}"; do
+  wait "$pid"
+done
+
 echo "All downloads complete."
