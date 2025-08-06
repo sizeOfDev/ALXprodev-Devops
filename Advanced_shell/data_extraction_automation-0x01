@@ -1,13 +1,23 @@
 #!/bin/bash
 
-jq -r ' 
-  . as $root | 
-  ($root.forms[0].name | ascii_upcase[0:1] + .[1:]) as $name | 
-  ($root.types[0].type.name | ascii_upcase[0:1] + .[1:]) as $type | 
-  ($root.weight / 10) as $weight | ($root.height / 10) as $height | 
-  "\($name) is of type \($type), weighs \($weight)kg, and is \($height) tall." 
-' data.json
+# jq -r ' 
+#   . as $root | 
+#   ($root.forms[0].name | ascii_upcase[0:1] + .[1:]) as $name | 
+#   ($root.types[0].type.name | ascii_upcase[0:1] + .[1:]) as $type | 
+#   ($root.weight / 10) as $weight | ($root.height / 10) as $height | 
+#   "\($name) is of type \($type), weighs \($weight)kg, and is \($height) tall." 
+# ' data.json
 
 
 
 # Pikachu is of type Electric, weighs 6kg, and is 0.4m tall
+
+jq -r '.forms[0].name, .types[0].type.name, (.weight / 10), (.height / 10)' data.json |
+awk 'NR==1{ name = $0 }
+     NR==2{ type = $0 }
+     NR==3{ formatted_weight = $0 }
+     NR==4{ formatted_height = $0 }
+     END {
+       printf "%s is of type %s, weighs %.0fkg, and is %.0f tall.\n", name, type, formatted_weight, formatted_height
+     }' |
+sed -E 's/^([a-z])/\U\1/; s/type ([a-z])/\U\1/' 
