@@ -1,16 +1,24 @@
 #!/bin/bash
 pokemon=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
 
+exec 2>> errors.txt
+
 for item in "${pokemon[@]}"; do
-  
-  set -e
-  exec 2>> errors.txt
 
   echo Fetching data for $item...
 
-  curl -f https://pokeapi.co/api/v2/pokemon/$item > $item.json
-  echo "Saved data to $item.json ✅"
+  for i in {1..3}; do
+    curl -f https://pokeapi.co/api/v2/pokemon/$item > $item.json
+    echo "Attempt $i for $item failed. Retrying..." >&2
 
-  sleep 1
+    sleep 1
+    done
 
+    if [[ ! -s "$item.json" ]]; then
+        echo "Failed to fetch data for $item after 3 attempts." >&2
+        continue
+    fi
+
+    echo "Attempt $i for $item failed. Retrying..." >&2
+    sleep 1
 done
