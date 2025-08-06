@@ -1,0 +1,37 @@
+#!/bin/bash
+pokemon=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
+
+echo  "Name,Height (m),Weight (kg)" > pokemon_report.csv
+
+  set -e
+  exec 2>> errors.txt
+
+for item in "${pokemon[@]}"; do
+  
+
+  name=$(jq -r '.forms[0].name' $item.json | sed -E 's/^([a-z])/\U\1/')
+  weight=$(jq -r '.weight' $item.json)
+  height=$(jq -r '.height' $item.json)
+
+  formatted_height=$(awk "BEGIN {printf \"%.1f\", $height / 10}")
+  formatted_weight=$(awk "BEGIN {printf \"%.1f\", $weight / 10}")
+
+  echo  "$name,$formatted_height,$formatted_weight" >> pokemon_report.csv
+
+
+done
+
+average_height=$(awk -F',' 'NR > 1 { sum += $2; count++ } END { if (count > 0) print sum / count }' pokemon_report.csv)
+average_weight=$(awk -F',' 'NR > 1 { sum += $3; count++ } END { if (count > 0) print sum / count }' pokemon_report.csv)
+
+echo "" >> pokemon_report.csv
+echo "" >> pokemon_report.csv
+
+echo "Average Height: ${average_height} m" >> pokemon_report.csv
+echo  "Average Weight: ${average_weight} kg" >> pokemon_report.csv
+
+
+echo "CSV Report generated at: pokemon_report.csv"
+echo ""
+
+cat pokemon_report.csv
